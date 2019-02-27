@@ -10,6 +10,9 @@ class Blogger(models.Model):
 
     biography = models.TextField(max_length = 1000, help_text='Biography for blogger info')
 
+    class Meta:
+        ordering = ['user__username']
+
     def __str__(self):
         return self.user.username
 
@@ -20,7 +23,7 @@ class Blog(models.Model):
 
     title = models.CharField(max_length = 200)
 
-    user = models.ForeignKey('Blogger', on_delete=models.CASCADE)
+    user = models.ForeignKey('Blogger', verbose_name = 'Author', on_delete=models.CASCADE)
 
     post_date = models.DateField(auto_now = True)
 
@@ -39,11 +42,11 @@ class Comment(models.Model):
 
     user = models.ForeignKey('Blogger', on_delete = models.CASCADE )
 
-    date = models.DateField(auto_now= True)
+    date = models.DateField(auto_now= True, verbose_name='Comment date')
 
     comment = models.TextField()
 
-    blog = models.ForeignKey('Blog' , on_delete= models.CASCADE )
+    blog = models.ForeignKey('Blog' , on_delete= models.CASCADE, verbose_name='Comment made on post titled' )
 
     class Meta: 
         ordering = ['blog' , 'date']
