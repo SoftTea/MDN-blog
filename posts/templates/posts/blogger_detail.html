@@ -1,0 +1,44 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<p> Blogger: {{blogger.user}}</p>
+<p> Bio </p>
+<p>{{ blogger.biography }}</p>
+
+<h4>Blogs Posted</h4>
+    
+    
+<hr>
+{% for blog in blogs %}
+   
+
+   <p><strong> <a href="{{ blog.get_absolute_url }}"> {{ blog.title }}</a> ({{ blog.post_date}}) </strong></p>
+   
+ {% endfor %}
+
+{% endblock %}
+
+{% block pagination %}
+    
+
+
+
+<div class="pagination">
+        <span class="step-links">
+            {% if blogs.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ blogs.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ blogs.number }} of {{ blogs.paginator.num_pages }}.
+            </span>
+    
+            {% if blogs.has_next %}
+                <a href="?page={{ blogs.next_page_number }}">next</a>
+                <a href="?page={{ blogs.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endblock %}}
