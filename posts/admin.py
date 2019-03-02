@@ -45,3 +45,4 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ('user', 'blog', 'date')
     list_filter = ('blog',)
     readonly_fields = ('date',)
+   

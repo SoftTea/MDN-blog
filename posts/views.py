@@ -31,7 +31,7 @@ class BlogDetailView (generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BlogDetailView,self).get_context_data(**kwargs)
-        comments_list =  Comment.objects.filter(blog_id = self.kwargs['pk']).order_by('-date')
+        comments_list =  Comment.objects.filter(blog_id = self.kwargs['pk']).order_by('date')
 
         paginator = Paginator( comments_list, self.paginate_by)
         page = self.request.GET.get('page')
@@ -71,7 +71,7 @@ class BloggerDetailView (generic.DetailView):
 
 
         context['blogs'] = blogs
-        print(context)
+       
         return context
 
 

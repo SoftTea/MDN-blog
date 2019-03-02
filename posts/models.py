@@ -43,7 +43,7 @@ class Comment(models.Model):
 
     user = models.ForeignKey('Blogger', on_delete = models.CASCADE )
 
-    date = models.DateField(auto_now= True, verbose_name='Comment date')
+    date = models.DateTimeField(auto_now= True, verbose_name='Comment date')
 
     comment = models.TextField()
 
