@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Blogs you have written </h1>
+
+    {% if blog_list %}
+    <ul>
+
+      {% for blog in blog_list %} 
+      <li class="">
+        <a href="{% url 'blog-detail' blog.pk %}">{{blog.title}}</a>        
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>You have not written any blogs.</p>
+    {% endif %}       
+{% endblock %}

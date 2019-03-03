@@ -24,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls')),
     path('', RedirectView.as_view( url='/posts/', permanent = True)),
+    path('accounts/', include('django.contrib.auth.urls')),
     
 ] + static(settings.STATIC_URL, document_root= settings.STATIC_ROOT)

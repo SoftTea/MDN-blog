@@ -4,6 +4,7 @@ from django.views import generic
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
@@ -12,10 +13,15 @@ def index(request):
 
     num_blogs = Blog.objects.all().count()
     num_bloggers = Blogger.objects.all().count()
+
+     # Number of visits to this view, as counted in the session variable.
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
    
     context = {
        'num_blogs' : num_blogs,
-       'num_bloggers' : num_bloggers
+       'num_bloggers' : num_bloggers,
+       'num_visits' : num_visits,
     }
 
     return render(request, 'index.html', context=context )
@@ -73,6 +79,14 @@ class BloggerDetailView (generic.DetailView):
         context['blogs'] = blogs
        
         return context
+
+class BlogsByLoggedInUserListView(LoginRequiredMixin, generic.ListView):
+    model = Blog
+    template_name ='posts/blogs_by_user_loggedIn.html'
+    paginate_by = 10
+
+    def get_queryset (self):
+        return Blog.objects.filter(user__user = self.request.user)
 
 
     
