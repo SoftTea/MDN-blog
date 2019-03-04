@@ -8,7 +8,7 @@
 
       {% for blog in blog_list %} 
       <li class="">
-        <a href="{% url 'blog-detail' blog.pk %}">{{blog.title}}</a>        
+        <a href="{% url 'blog-detail' blog.pk %}">{{blog.title}}</a> ({{blog.post_date}})      
       </li>
       {% endfor %}
     </ul>

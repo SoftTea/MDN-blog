@@ -6,6 +6,11 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+# Form Imports
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+
 # Create your views here.
 
 
@@ -28,7 +33,7 @@ def index(request):
 
 class BlogListView (generic.ListView):
     model = Blog
-    paginate_by = 2
+    paginate_by = 10
     ordering = ['-post_date']
 
 class BlogDetailView (generic.DetailView):
@@ -88,7 +93,18 @@ class BlogsByLoggedInUserListView(LoginRequiredMixin, generic.ListView):
     def get_queryset (self):
         return Blog.objects.filter(user__user = self.request.user)
 
+# FORM VIEWS
 
+class BlogCreate(LoginRequiredMixin,CreateView):
+    model = Blog
+    fields = ['title','content']
+    
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.user = Blogger.objects.get(user = self.request.user )
+        obj.save()
+        return HttpResponseRedirect(obj.get_absolute_url())
     
     
     

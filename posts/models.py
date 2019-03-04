@@ -26,7 +26,7 @@ class Blog(models.Model):
 
     user = models.ForeignKey('Blogger', verbose_name = 'Author', on_delete=models.CASCADE)
 
-    post_date = models.DateField(auto_now = True)
+    post_date = models.DateTimeField(auto_now = True)
 
     content = models.TextField()
 
