@@ -4,7 +4,7 @@ from django.views import generic
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin , UserPassesTestMixin
 
 # Form Imports
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -105,6 +105,14 @@ class BlogCreate(LoginRequiredMixin,CreateView):
         obj.user = Blogger.objects.get(user = self.request.user )
         obj.save()
         return HttpResponseRedirect(obj.get_absolute_url())
+
+class BlogUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Blog
+    fields = ['title', 'content']
+
+    def test_func(self):
+        obj  = self.get_object()
+        return obj.user.user == self.request.user
     
     
     
