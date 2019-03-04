@@ -3,7 +3,7 @@
 {% block content %}
   <h1>{{ blog.title }}</h1>
 
-  <p><strong>Author:</strong> <a href="">{{ blog.user }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Author:</strong> <a href="{% url 'blogger-detail' blog.user.id %}">{{ blog.user }}</a></p> <!-- author detail link not yet defined -->
   <p><strong>Posted on:</strong> {{ blog.post_date }}</p>
   <p style='text-indent: 20px'>{{ blog.content }}</p> 
   
@@ -16,6 +16,8 @@
       <p> {{comment.date}}</p>
       <p style='text-indent: 20px'> {{comment.comment}}</p>
     {% endfor %}
+
+    <a href="{% url 'comment-create' blog.id %}"> Comment on this post</a>
   
     {% endblock %}
 
@@ -41,6 +43,8 @@
             </span>
         </div>
         {% endblock %}}
+
+
  
   </div>
 

@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin , UserPassesTestMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -99,12 +100,17 @@ class BlogCreate(LoginRequiredMixin,CreateView):
     model = Blog
     fields = ['title','content']
     
+    def form_valid(self,form):
+        
+        form.instance.user = Blogger.objects.get(user = self.request.user )
 
-    def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.user = Blogger.objects.get(user = self.request.user )
-        obj.save()
-        return HttpResponseRedirect(obj.get_absolute_url())
+        return super(BlogCreate, self).form_valid(form)
+
+    # def form_valid(self, form):
+    #     obj = form.save(commit=False)
+    #     obj.user = Blogger.objects.get(user = self.request.user )
+    #     obj.save()
+    #     return HttpResponseRedirect(obj.get_absolute_url())
 
 class BlogUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Blog
@@ -124,7 +130,20 @@ class BlogDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         obj  = self.get_object()
         return obj.user.user == self.request.user
-    
+
+class CommentCreate(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ['comment',]
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('blog-detail', kwargs = { 'pk' : self.kwargs['pk'] })
+
+    def form_valid(self,form):
+
+        form.instance.user = Blogger.objects.get(user = self.request.user )
+
+        form.instance.blog = get_object_or_404(Blog, pk = self.kwargs['pk'])
+        return super(CommentCreate, self).form_valid(form)
     
     
     

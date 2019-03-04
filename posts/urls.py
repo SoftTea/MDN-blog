@@ -11,5 +11,6 @@ urlpatterns = [
     path('blog/create/', views.BlogCreate.as_view(), name='blog-create'),
     path('blog/<int:pk>/update/', views.BlogUpdate.as_view(), name='blog-update'),
     path('blog/<int:pk>/delete/', views.BlogDelete.as_view(), name='blog-delete'),
+    path('blogs/<int:pk>/create-comment', views.CommentCreate.as_view(), name='comment-create')
     
 ]
