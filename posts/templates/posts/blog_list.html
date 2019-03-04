@@ -10,6 +10,9 @@
         ({{blog.post_date}}) — {{blog.user}} 
         {% if blog.user.user == user %}
         <a href="{% url 'blog-update' blog.pk %}">Edit</a> 
+        <form method="POST" action="{% url 'blog-delete' blog.pk %}?next={{request.path}}">
+          {% csrf_token %}<input type="submit" value="DELETE">
+       </form>
         {% endif %}
       </li>
     {% endfor %}

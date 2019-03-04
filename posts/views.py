@@ -113,6 +113,18 @@ class BlogUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         obj  = self.get_object()
         return obj.user.user == self.request.user
+
+class BlogDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Blog
+    success_url = reverse_lazy('index')
+
+    def get_success_url(self, **kwargs):
+        return self.request.GET.get('next', reverse_lazy('index'))
+
+    def test_func(self):
+        obj  = self.get_object()
+        return obj.user.user == self.request.user
+    
     
     
     

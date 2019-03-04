@@ -9,7 +9,9 @@
       {% for blog in blog_list %} 
       <li class="">
         <a href="{% url 'blog-detail' blog.pk %}">{{blog.title}}</a> ({{blog.post_date}})  
-        <a href="{% url 'blog-update' blog.pk %}">Edit</a>    
+        <a href="{% url 'blog-update' blog.pk %}">Edit</a> 
+        <form style='display: inline; cursor: pointer;' method="POST" action="{% url 'blog-delete' blog.pk %}?next={{request.path}}">
+          {% csrf_token %}<input  style=' background-color: white; text-decoration-line: pink; border: none; color: blue; cursor: pointer;' type="submit" value="DELETE">     
       </li>
       {% endfor %}
     </ul>
