@@ -63,6 +63,7 @@ class BlogDetailView (generic.DetailView):
 
 class BloggerListView (generic.ListView):
     model = Blogger
+    paginate_by = 10
 
 class BloggerDetailView (generic.DetailView):
     model= Blogger 
