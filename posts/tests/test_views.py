@@ -88,6 +88,15 @@ class BlogsByLoggedInUserListViewTest(TestCase):
         # Check we used correct template
         self.assertTemplateUsed(response, 'posts/blogs_by_user_loggedIn.html')
 
+    def test_pagination_is_ten(self):
+        login = self.client.login(username='testuser2', password='2HJ1vRV0Z&3iD')
+        response = self.client.get(reverse('my-blog'))
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['blog_list']) == 10)
+
+
+
     def test_only_user_blogs_in_list(self):
         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
         response = self.client.get(reverse('my-blog'))
@@ -110,3 +119,68 @@ class BlogsByLoggedInUserListViewTest(TestCase):
 
         self.assertTrue('blog_list' in response.context)
         self.assertEqual(len(response.context['blog_list']), 10)
+
+
+class BlogCreateViewTest(TestCase):
+
+    def setUp(self):
+        test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
+        test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
+
+        test_user1.save()
+        test_user2.save()
+
+        
+        blogger1 = Blogger.objects.create(user=test_user1,biography='test1')
+
+        blogger1.save()
+
+
+
+    def notLoggedInRedirect(self):
+        response = self.client.get(reverse('blog-create'))
+        self.assertTrue( response.status_code, 200)
+        self.assertRedirects(response, '/accounts/login/?next=/posts/blog/create/')
+
+    def notLoggedInPostAttemptForbidden(self):
+        response = self.client.post(reverse('blog-create'))
+        self.assertTrue(response.status_code, 403)
+
+    def loggedInStatus200 (self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('blog-create'))
+        self.assertTrue( response.status_code, 200)
+
+    def loggedInCorrectTemplate (self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('blog-create'))
+        self.assertTrue( response.status_code, 200)
+        self.assertTemplateUsed(response , 'blog_form.html') 
+
+    def checkFormFields (self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('blog-create'))
+        form = response.context['form']
+       
+        
+        self.assertEquals( form.fields['title'].label , 'title')
+
+        self.assertEquals( form.fields['content'].label , 'content')
+
+        self.assertEquals( form.fields['post_date'].label , 'post date')
+
+     
+
+    def checkFormFilledWithLoggedInUser(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('blog-create'))
+        form = response.context['form']
+
+        self.assertEquals (form.fields['user'] , Blogger.objects.get(self.user.id))
+
+    def test_redirect_if_post_logged_in (self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.post(reverse('blog-create'), {'title':'Title', 'content':'Fake Post'})
+        self.assertAlmostEqual(response.status_code, 302)
+
+        self.assertRedirects(response, '/posts/blogs/1')

@@ -57,7 +57,7 @@ class BlogDetailView (generic.DetailView):
 
 
         context['comments'] = comments
-        print(context)
+        
         return context
 
 
@@ -146,5 +146,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         form.instance.blog = get_object_or_404(Blog, pk = self.kwargs['pk'])
         return super(CommentCreate, self).form_valid(form)
     
+
+
     
     
