@@ -26,7 +26,7 @@
 
 from django.test import TestCase
 from django.contrib.auth.models import User
-from posts.models import Blogger 
+from posts.models import Blogger , Blog , Comment
 
 class BloggerModelTest (TestCase):
     @classmethod
@@ -72,3 +72,62 @@ class BloggerModelTest (TestCase):
         blogger = Blogger.objects.get(id=1)
         expected_text = blogger._meta.ordering
         self.assertEquals(['user__username'],expected_text)
+
+class BlogModelTest (TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user('myusername', 'myemail@crazymail.com', 'mypassword')
+
+        user.first_name = 'John'
+
+        user.last_name = 'Citizen'
+
+        blogger = Blogger.objects.create(user = user ,biography='This is a test!')
+
+        Blog.objects.create(user= blogger, title='test title', content='test content')
+
+    def test_user_label(self):
+        blog = Blog.objects.get(id=1)
+        field_label = blog._meta.get_field('user').verbose_name
+        self.assertEquals(field_label,'Author')
+
+    def test_title_label(self):
+        blog = Blog.objects.get(id=1)
+        field_label = blog._meta.get_field('title').verbose_name
+        self.assertEquals(field_label,'title')
+
+    def test_content_label(self):
+        blog = Blog.objects.get(id=1)
+        field_label = blog._meta.get_field('content').verbose_name
+        self.assertEquals(field_label,'content')
+
+    def test_post_date_label(self):
+        blog = Blog.objects.get(id=1)
+        field_label = blog._meta.get_field('post_date').verbose_name
+        self.assertEquals(field_label,'post date')
+
+    def test_title_label(self):
+        blog = Blog.objects.get(id=1)
+        max_length = blog._meta.get_field('title').max_length
+        self.assertEquals(max_length,200)
+
+    def test_post_date_auto_now(self):
+        blog = Blog.objects.get(id=1)
+        auto_now = blog._meta.get_field('post_date').auto_now
+        self.assertTrue(auto_now)
+
+    def test_model_ordering(self):
+        blog = Blog.objects.get(id=1)
+        order = blog._meta.ordering
+        self.assertEqual(order, ['user' , '-post_date' , 'title'])
+
+    def test_get_absolute_url(self):
+         blog = Blog.objects.get(id=1)
+         self.assertEqual(blog.get_absolute_url(), '/posts/blogs/1')
+
+    def test_str_is_title(self):
+        blog = Blog.objects.get(id=1)
+        self.assertEqual(blog.__str__(), blog.title)
+    
+
+
