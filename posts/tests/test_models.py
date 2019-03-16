@@ -106,7 +106,7 @@ class BlogModelTest (TestCase):
         field_label = blog._meta.get_field('post_date').verbose_name
         self.assertEquals(field_label,'post date')
 
-    def test_title_label(self):
+    def test_title_max_length(self):
         blog = Blog.objects.get(id=1)
         max_length = blog._meta.get_field('title').max_length
         self.assertEquals(max_length,200)
@@ -128,6 +128,50 @@ class BlogModelTest (TestCase):
     def test_str_is_title(self):
         blog = Blog.objects.get(id=1)
         self.assertEqual(blog.__str__(), blog.title)
+
+
     
 
+class CommentModelTest (TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user('myusername', 'myemail@crazymail.com', 'mypassword')
+
+        user.first_name = 'John'
+
+        user.last_name = 'Citizen'
+
+        blogger = Blogger.objects.create(user = user ,biography='This is a test!')
+
+        blog = Blog.objects.create(user= blogger, title='test title', content='test content')
+
+        Comment.objects.create(user = blogger , comment = ' this is a test comment' , blog = blog)
+
+    def test_verbose_name_blog(self):
+        comment = Comment.objects.get(id=1)
+        field_label = comment._meta.get_field('blog').verbose_name
+        self.assertEqual(field_label, 'Comment made on post titled')
+
+    def test_verbose_name_date(self):
+        comment = Comment.objects.get(id=1)
+        field_label = comment._meta.get_field('date').verbose_name
+        self.assertEqual(field_label, 'Comment date')
+
+    def test_post_date_auto_now(self):
+        comment = Comment.objects.get(id=1)    
+        auto_now = comment._meta.get_field('date').auto_now
+        self.assertTrue(auto_now)
+
+    def test_model_ordering(self):
+        comment = Comment.objects.get(id=1)
+        order = comment._meta.ordering
+        self.assertEqual(order, ['blog' , 'date'])
+
+    def test_str_is_title(self):
+        comment = Comment.objects.get(id=1)
+        self.assertEqual(comment.__str__(), comment.user.__str__())
+
+    
+
+    
 
