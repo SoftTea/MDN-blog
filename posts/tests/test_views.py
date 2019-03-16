@@ -5,6 +5,58 @@ from django.urls import reverse
 from posts.models import Blogger , Blog 
 from django.contrib.auth.models import User
 
+class BlogListViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Create 13 authors for pagination tests
+        number_of_bloggers = 13
+
+        for blogger_id in range(number_of_bloggers):
+
+            blogger = Blogger.objects.create(
+                user= User.objects.create_user(f'user{blogger_id}', 'myemail@crazymail.com', 'mypassword'),
+                biography=f'{blogger_id}',
+            )
+
+            Blog.objects.create(title = f'Test title {blogger_id}',
+            content =  f'Test content {blogger_id}',
+            user = blogger
+
+             )
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/posts/blogs/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        response = self.client.get(reverse('blogs'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('blogs'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'posts/blog_list.html')
+
+    def test_pagination_is_ten(self):
+        response = self.client.get(reverse('blogs'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['blog_list']) == 10)
+
+    def test_lists_all_bloggers(self):
+        # Get second page and confirm it has (exactly) remaining 3 items
+        response = self.client.get(reverse('blogs')+'?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['blog_list']) == 3)
+
+    
+
+        
+    
+
 class BloggerListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
