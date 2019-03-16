@@ -167,6 +167,10 @@ class CommentModelTest (TestCase):
         order = comment._meta.ordering
         self.assertEqual(order, ['blog' , 'date'])
 
+    def test_get_absolute_url(self):
+        comment = Comment.objects.get(id=1)
+        self.assertEqual(comment.get_absolute_url(), '/posts/blogs/1')
+
     def test_str_is_title(self):
         comment = Comment.objects.get(id=1)
         self.assertEqual(comment.__str__(), comment.user.__str__())

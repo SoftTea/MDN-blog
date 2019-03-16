@@ -52,6 +52,9 @@ class Comment(models.Model):
     class Meta: 
         ordering = ['blog' , 'date']
 
+    def get_absolute_url(self):
+        return reverse('blog-detail' , args=[str(self.blog.id)])
+
     def __str__(self):
         return f'{self.user}'
 
