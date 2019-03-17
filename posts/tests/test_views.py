@@ -13,14 +13,15 @@ class BlogListViewTest(TestCase):
 
         for blogger_id in range(number_of_bloggers):
 
-            blogger = Blogger.objects.create(
-                user= User.objects.create_user(f'user{blogger_id}', 'myemail@crazymail.com', 'mypassword'),
-                biography=f'{blogger_id}',
-            )
+            
+            user= User.objects.create_user(f'user{blogger_id}', 'myemail@crazymail.com', 'mypassword')
+              
+            user.save()
+            
 
             Blog.objects.create(title = f'Test title {blogger_id}',
             content =  f'Test content {blogger_id}',
-            user = blogger
+            user = Blogger.objects.get(id = blogger_id +1)
 
              )
 
@@ -65,10 +66,8 @@ class BloggerListViewTest(TestCase):
 
         for blogger_id in range(number_of_bloggers):
 
-            Blogger.objects.create(
-                user= User.objects.create_user(f'user{blogger_id}', 'myemail@crazymail.com', 'mypassword'),
-                biography=f'{blogger_id}',
-            )
+             User.objects.create_user(f'user{blogger_id}', 'myemail@crazymail.com', 'mypassword')
+            
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/posts/bloggers/')
@@ -109,8 +108,8 @@ class BlogsByLoggedInUserListViewTest(TestCase):
         test_user1.save()
         test_user2.save()
 
-        blogger1 = Blogger.objects.create(user=test_user1,biography='test1')
-        blogger2 = Blogger.objects.create(user=test_user2, biography='test2')
+        blogger1 = test_user1.blogger
+        blogger2 = test_user2.blogger
 
         blogger1.save()
         blogger2.save()
@@ -183,9 +182,9 @@ class BlogCreateViewTest(TestCase):
         test_user2.save()
 
         
-        blogger1 = Blogger.objects.create(user=test_user1,biography='test1')
+        # blogger1 = Blogger.objects.create(user=test_user1,biography='test1')
 
-        blogger1.save()
+        # blogger1.save()
 
 
 

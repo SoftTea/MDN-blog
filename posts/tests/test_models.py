@@ -37,7 +37,9 @@ class BloggerModelTest (TestCase):
 
         user.last_name = 'Citizen'
 
-        Blogger.objects.create(user = user ,biography='This is a test!')
+        user.blogger.biography = 'This is a test!'
+
+        # Blogger.objects.create(user = user ,biography='This is a test!')
 
     def test_user_label(self):
         blogger = Blogger.objects.get(id=1)
@@ -82,9 +84,9 @@ class BlogModelTest (TestCase):
 
         user.last_name = 'Citizen'
 
-        blogger = Blogger.objects.create(user = user ,biography='This is a test!')
+        # blogger = Blogger.objects.create(user = user ,biography='This is a test!')
 
-        Blog.objects.create(user= blogger, title='test title', content='test content')
+        Blog.objects.create(user= user.blogger, title='test title', content='test content')
 
     def test_user_label(self):
         blog = Blog.objects.get(id=1)
@@ -141,11 +143,11 @@ class CommentModelTest (TestCase):
 
         user.last_name = 'Citizen'
 
-        blogger = Blogger.objects.create(user = user ,biography='This is a test!')
+        # blogger = Blogger.objects.create(user = user ,biography='This is a test!')
 
-        blog = Blog.objects.create(user= blogger, title='test title', content='test content')
+        blog = Blog.objects.create(user= user.blogger, title='test title', content='test content')
 
-        Comment.objects.create(user = blogger , comment = ' this is a test comment' , blog = blog)
+        Comment.objects.create(user = user.blogger , comment = ' this is a test comment' , blog = blog)
 
     def test_verbose_name_blog(self):
         comment = Comment.objects.get(id=1)

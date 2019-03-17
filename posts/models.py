@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -9,7 +11,7 @@ class Blogger(models.Model):
 
     user = models.OneToOneField(User, on_delete = models.CASCADE)
 
-    biography = models.TextField(max_length = 1000, help_text='Biography for blogger info')
+    biography = models.TextField(max_length = 1000, help_text='Biography for blogger info', blank=True, default='')
 
     class Meta:
         ordering = ['user__username']
@@ -19,6 +21,12 @@ class Blogger(models.Model):
 
     def get_absolute_url(self):
         return reverse('blogger-detail' , args=[str(self.id)])
+
+@receiver(post_save, sender=User)
+def update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Blogger.objects.create(user=instance)
+    instance.blogger.save() 
 
 class Blog(models.Model):
 

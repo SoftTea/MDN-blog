@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
 from posts.models import Blog, Blogger, Comment
 from django.views import generic
 from django.core.paginator import Paginator
@@ -12,6 +12,9 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
+
+from django.contrib.auth import login, authenticate
+from .forms import SignUpForm
 # Create your views here.
 
 
@@ -146,6 +149,22 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         form.instance.blog = get_object_or_404(Blog, pk = self.kwargs['pk'])
         return super(CommentCreate, self).form_valid(form)
     
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()  # load the profile instance created by the signal
+            user.blogger.biography = form.cleaned_data.get('biography')
+            user.save()
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            return redirect('/posts')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 
 
     
